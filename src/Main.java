@@ -10,47 +10,53 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class Main {
-    static ResourceBundle strings;
-    static Properties settings;
+	static ResourceBundle strings;
+	static Properties settings;
 
-    static {
-        try { //Internationalization
-            strings = ResourceBundle.getBundle("Languages", Locale.SIMPLIFIED_CHINESE);//TODO change to default
-        } catch (MissingResourceException e) {
-            strings = ResourceBundle.getBundle("Languages", Locale.SIMPLIFIED_CHINESE);
-        }
-        try { //Setting Property
-            settings = new Properties();
-            settings.load(new FileInputStream(new File("Settings.properties")));
-        } catch (Exception e) {//Defaults
+	static {
+		try { //Internationalization
+			strings = ResourceBundle.getBundle("Languages", Locale.SIMPLIFIED_CHINESE);//TODO change to default
+		} catch (MissingResourceException e) {
+			strings = ResourceBundle.getBundle("Languages", Locale.SIMPLIFIED_CHINESE);
+		}
+		try { //Setting Property
+			settings = new Properties();
+			settings.load(new FileInputStream(new File("Settings.properties")));
+		} catch (Exception e) {//Defaults
 
-        }
-    }
+		}
+	}
 
-    public static void playSound() {
-        try {
-            AudioStream ring = new AudioStream(Main.class.getResourceAsStream("Sound.wav"));
-            AudioPlayer.player.start(ring);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	public static void playSound() {
+		try {
+			AudioStream ring = new AudioStream(Main.class.getResourceAsStream("Sound.wav"));
+			AudioPlayer.player.start(ring);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    public static String twoDigitStr(int a) {
-        return (a > 9 ? Integer.toString(a) : "0" + a);
-    }
+	public static String twoDigitStr(int a) {
+		return (a > 9 ? Integer.toString(a) : "0" + a);
+	}
 
-    public static boolean saveSettings() {
-        try {
-            FileOutputStream fos = new FileOutputStream(new File("Settings.properties"));
-            settings.store(fos, null);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+	public synchronized static boolean saveSettings() {
+		try {
+			FileOutputStream fos = new FileOutputStream(new File("Settings.properties"));
+			settings.store(fos, null);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
-    public static void main(String args[]) {
+	public static void hotKeyPressed() {
+		System.out.println("keypressed");
+	}
 
-    }
+	public static void main(String args[]) throws InterruptedException {
+		JNI.init();
+		Thread.sleep(100000);
+	}
+
 }
