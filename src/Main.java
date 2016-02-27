@@ -1,24 +1,22 @@
+import Languages.Chinese;
+import Languages.Internationalization;
 import sun.audio.AudioPlayer;
 import sun.audio.AudioStream;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
 
 public class Main {
-	static ResourceBundle strings;
+	static Internationalization strings = null;
 	static Properties settings;
 
 	static {
-		try { //Internationalization
-			strings = ResourceBundle.getBundle("Languages", Locale.SIMPLIFIED_CHINESE);//TODO change to default
-		} catch (MissingResourceException e) {
-			strings = ResourceBundle.getBundle("Languages", Locale.SIMPLIFIED_CHINESE);
-		}
+		Locale locale = Locale.getDefault();
+		strings = Chinese.getInstance();
 		try { //Setting Property
 			settings = new Properties();
 			settings.load(new FileInputStream(new File("Settings.properties")));
@@ -51,12 +49,16 @@ public class Main {
 	}
 
 	public static void hotKeyPressed() {
-		System.out.println("keypressed");
+		HomePage.getInstance();
 	}
 
 	public static void main(String args[]) throws InterruptedException {
 		JNI.init();
-		Thread.sleep(100000);
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
