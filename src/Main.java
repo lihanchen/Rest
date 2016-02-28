@@ -59,6 +59,8 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		TimeModel tm = new TimeModel();
+
 	}
 
 }
