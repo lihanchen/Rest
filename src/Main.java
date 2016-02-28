@@ -13,6 +13,7 @@ import java.util.Properties;
 public class Main {
 	static Internationalization strings = null;
 	static Properties settings;
+	static TimeModel timemodel;
 
 	static {
 		Locale locale = Locale.getDefault();
@@ -53,14 +54,13 @@ public class Main {
 	}
 
 	public static void main(String args[]) throws InterruptedException {
-		JNI.init();
+		//JNI.init();
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		TimeModel tm = new TimeModel();
-
+		HomePage.getInstance();
 	}
 
 }
