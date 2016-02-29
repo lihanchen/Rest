@@ -14,6 +14,7 @@ public class Main {
 	static Internationalization strings = null;
 	static Properties settings;
 	static TimeModel timemodel;
+	static ImageIcon icon;
 
 	static {
 		Locale locale = Locale.getDefault();
@@ -54,13 +55,15 @@ public class Main {
 	}
 
 	public static void main(String args[]) throws InterruptedException {
-		//JNI.init();
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		icon = new ImageIcon(Main.class.getResource("icon.png"));
 		HomePage.getInstance();
+
+
 	}
 
 }
