@@ -15,6 +15,9 @@ public class Internationalization {
 		this.map.put("exit", "退出");
 		this.map.put("RestNow", "立即休息");
 		this.map.put("ResetTime", "重新计时");
+		this.map.put("reset?", "确定要重新计时吗");
+		this.map.put("errorNumberFormat", "输入无效");
+		this.map.put("error", "错误");
 	}
 
 	public String getString(String name) {

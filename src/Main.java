@@ -36,10 +36,6 @@ public class Main {
 		}
 	}
 
-	public static String twoDigitStr(int a) {
-		return (a > 9 ? Integer.toString(a) : "0" + a);
-	}
-
 	public synchronized static boolean saveSettings() {
 		try {
 			FileOutputStream fos = new FileOutputStream(new File("Settings.properties"));
@@ -61,9 +57,10 @@ public class Main {
 			e.printStackTrace();
 		}
 		icon = new ImageIcon(Main.class.getResource("icon.png"));
-		HomePage.getInstance();
-
-
+		timemodel = new TimeModel(45, 10);
+		HomePage hp = HomePage.getInstance();
+		hp.setTime(45 * 60);
+		RestingWindow.getInstance();
 	}
 
 }

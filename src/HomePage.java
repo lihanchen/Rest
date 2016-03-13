@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.TimerTask;
 
 public class HomePage extends JFrame implements WindowListener {
 	private static HomePage theInstance = null;
@@ -27,19 +28,42 @@ public class HomePage extends JFrame implements WindowListener {
 	private JLabel LabelSignature;
 	private JTable TableHistory;
 	private JTable TableGame;
+	private JCheckBox checkFullScreen;
+	private JCheckBox checkCloseMonitor;
 	private JPanel GamePanel;
+	private java.util.Timer timer = null;
+	private int interval;
 
 	private HomePage() {
 		this.setContentPane(this.PaneMain);
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.setTitle(Main.strings.getString("title"));
-		this.setAlwaysOnTop(false);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setIconImage(Main.icon.getImage());
 		this.pack();
 		this.setVisible(true);
+
 		this.addWindowListener(this);
+		ButRemaining.addActionListener(e -> reset());
+//		ButRestNow.addActionListener(e -> rest());
+		ButSet.addActionListener(e -> {
+			try {
+				int newInterval = Integer.parseInt(textInterval.getText());
+				int newPeriod = Integer.parseInt(textPeriod.getText());
+				int OldInterval = Integer.parseInt((String) Main.settings.get("interval"));
+				Main.settings.put("interval", textInterval.getText());
+				Main.settings.put("period", textPeriod.getText());
+				this.interval += 60 * (newInterval - OldInterval);
+				Main.timemodel.change(newInterval, newPeriod);
+				if (interval <= 0) waitToRest();
+			} catch (Exception e1) {
+				JOptionPane.showMessageDialog(this, Main.strings.getString("errorNumberFormat"), Main.strings.getString("error"), JOptionPane.ERROR_MESSAGE);
+			}
+		});
+		checkCloseMonitor.addActionListener(e -> Main.settings.put("closeMonitor", "" + checkCloseMonitor.isSelected()));
+		checkFullScreen.addActionListener(e -> Main.settings.put("fullScreen", "" + checkFullScreen.isSelected()));
+
 
 		//мпел
 		if (SystemTray.isSupported()) {
@@ -90,9 +114,43 @@ public class HomePage extends JFrame implements WindowListener {
 		}
 	}
 
+	public static String twoDigitStr(int a) {
+		return (a > 9 ? Integer.toString(a) : "0" + a);
+	}
+
 	public static HomePage getInstance() {
 		if (theInstance == null) theInstance = new HomePage();
 		return theInstance;
+	}
+
+	private void waitToRest() {
+		System.out.println("Rest");
+	}
+
+	public void reset() {
+		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.WARNING_MESSAGE)
+				== JOptionPane.YES_OPTION) {
+			int newInterval = Integer.parseInt(Main.settings.getProperty("interval"));
+			interval = newInterval;
+			LabelRemaining.setText(twoDigitStr(newInterval) + ":00");
+		}
+	}
+
+	public void setTime(int interval) {
+		this.interval = interval;
+		if (timer != null) timer.cancel();
+		timer = new java.util.Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				HomePage.this.interval--;
+				if (HomePage.this.interval != 0) {
+					ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
+				} else {
+					HomePage.this.timer.cancel();
+					waitToRest();
+				}
+			}
+		}, 1000, 1000);
 	}
 
 	public void windowOpened(WindowEvent e) {

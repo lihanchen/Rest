@@ -16,11 +16,16 @@ public class TimeModel {
 	private Calendar lastTime;
 	private int period, interval;
 
-	public TimeModel(int period, int interval) {
+	public TimeModel(int interval, int period) {
 		this.period = period * 60;
 		this.interval = interval * 60;
 		this.records = new ArrayList<Record>(30);
 		lastTime = Calendar.getInstance();
+	}
+
+	public void change(int interval, int period) {
+		this.period = period * 60;
+		this.interval = interval * 60;
 	}
 
 	public ArrayList<Record> getRecords() {
@@ -36,7 +41,7 @@ public class TimeModel {
 		if (playingTime <= interval)
 			return period;
 		else
-			return period * playingTime / interval / 60;
+			return period * playingTime / interval;
 	}
 
 	public int stopRest() throws Exception {
@@ -48,13 +53,13 @@ public class TimeModel {
 		if (restingTime >= period)
 			return interval;
 		else
-			return interval * restingTime / period / 60;
+			return interval * restingTime / period;
 	}
 
 	public int keepPlaying() throws Exception {
 		lastTime = records.get(records.size() - 1).time;
 		records.remove(records.size() - 1);
-		return 5;
+		return (int) (0.2 * interval);
 	}
 
 	private int difference(Calendar cal1, Calendar cal2) {
