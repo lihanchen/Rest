@@ -8,9 +8,9 @@ import java.util.TimerTask;
 
 public class HomePage extends JFrame implements WindowListener {
 	private static HomePage theInstance = null;
-	private SystemTray tray;
+	public SystemTray tray;
+	public TrayIcon trayIcon;
 	private PopupMenu popMenu;
-	private TrayIcon trayIcon;
 	private JPanel PaneMain;
 	private JTabbedPane Tabs;
 	private JPanel PaneHome;
@@ -43,10 +43,11 @@ public class HomePage extends JFrame implements WindowListener {
 		this.setIconImage(Main.icon.getImage());
 		this.pack();
 		this.setVisible(true);
+		this.setTime(Main.timeModel.getInterval());
 
 		this.addWindowListener(this);
 		ButRemaining.addActionListener(e -> reset());
-//		ButRestNow.addActionListener(e -> rest());
+		ButRestNow.addActionListener(e -> rest(false));
 		ButSet.addActionListener(e -> {
 			try {
 				int newInterval = Integer.parseInt(textInterval.getText());
@@ -55,8 +56,8 @@ public class HomePage extends JFrame implements WindowListener {
 				Main.settings.put("interval", textInterval.getText());
 				Main.settings.put("period", textPeriod.getText());
 				this.interval += 60 * (newInterval - OldInterval);
-				Main.timemodel.change(newInterval, newPeriod);
-				if (interval <= 0) waitToRest();
+				Main.timeModel.change(newInterval, newPeriod);
+				if (interval <= 0) rest(true);
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(this, Main.strings.getString("errorNumberFormat"), Main.strings.getString("error"), JOptionPane.ERROR_MESSAGE);
 			}
@@ -70,24 +71,15 @@ public class HomePage extends JFrame implements WindowListener {
 			tray = SystemTray.getSystemTray();
 			popMenu = new PopupMenu();
 			MenuItem itemRestNow = new MenuItem(Main.strings.getString("RestNow"));
-//			itemRestNow.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					MainWindow.windowMain.rest(false);
-//				}
-//			});
+			itemRestNow.addActionListener(e -> rest(false));
 			MenuItem itemClear = new MenuItem(Main.strings.getString("ResetTime"));
-//			itemClear.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					MainWindow.minutePassed = 0;
-//					MainWindow.buttonTimePassed.setText("00:00");
-//				}
-//			});
+			itemClear.addActionListener(e -> reset());
 			MenuItem itemExit = new MenuItem(Main.strings.getString("exit"));
 			itemExit.addActionListener(e -> System.exit(0));
 			popMenu.add(itemRestNow);
 			popMenu.add(itemClear);
 			popMenu.add(itemExit);
-			trayIcon = new TrayIcon(Main.icon.getImage(), Main.strings.getString("signature"));
+			trayIcon = new TrayIcon(Main.icon.getImage(), Main.strings.getString("signature"), popMenu);
 			trayIcon.setImageAutoSize(true);
 			trayIcon.addMouseListener(new MouseListener() {
 				public void mouseReleased(MouseEvent arg0) {
@@ -123,10 +115,6 @@ public class HomePage extends JFrame implements WindowListener {
 		return theInstance;
 	}
 
-	private void waitToRest() {
-		System.out.println("Rest");
-	}
-
 	public void reset() {
 		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.WARNING_MESSAGE)
 				== JOptionPane.YES_OPTION) {
@@ -137,20 +125,20 @@ public class HomePage extends JFrame implements WindowListener {
 	}
 
 	public void setTime(int interval) {
-		this.interval = interval;
+		this.interval = interval + 1;
 		if (timer != null) timer.cancel();
 		timer = new java.util.Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
+		timer.scheduleAtFixedRate(new TimerTask() { //lambda doesn't work
 			public void run() {
 				HomePage.this.interval--;
 				if (HomePage.this.interval != 0) {
 					ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 				} else {
 					HomePage.this.timer.cancel();
-					waitToRest();
+					rest(true);
 				}
 			}
-		}, 1000, 1000);
+		}, 0, 1000);
 	}
 
 	public void windowOpened(WindowEvent e) {
@@ -185,4 +173,17 @@ public class HomePage extends JFrame implements WindowListener {
 
 	public void windowDeactivated(WindowEvent e) {
 	}
+
+	private void rest(boolean automatic) {
+		if (timer != null) {
+			timer.cancel();
+			timer = null;
+		}
+		if (automatic == automatic) {
+
+		}
+		this.setVisible(false);
+		RestingWindow.getInstance();
+	}
+
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="HotKeyHandler">
+  <grid id="27dc6" binding="mainPane" layout-manager="FlowLayout" hgap="20" vgap="20" flow-align="1">
+    <constraints>
+      <xy x="20" y="20" width="210" height="131"/>
+    </constraints>
+    <properties>
+      <minimumSize width="-1" height="-1"/>
+      <preferredSize width="-1" height="-1"/>
+    </properties>
+    <border type="none"/>
+    <children/>
+  </grid>
+</form>

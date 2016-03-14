@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class RestingWindow extends JDialog {
+public class RestingWindow extends JDialog implements HotKeyReceiver {
 	private static RestingWindow theInstance;
 	private JPanel contentPane;
 	private JLabel LabelRemainingTime;
@@ -10,6 +10,7 @@ public class RestingWindow extends JDialog {
 	private JButton ButStop;
 	private JPanel mainPanel;
 	private int secondRemainging;
+	private Timer timer;
 
 	public RestingWindow(int restTime) {
 		this.add(contentPane);
@@ -19,8 +20,8 @@ public class RestingWindow extends JDialog {
 		this.setLayout(null);
 		//FullScreen
 		if (Boolean.parseBoolean(Main.settings.getProperty("fullScreen"))) {
-			int screenWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
-			int screenHeight = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
+			int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+			int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 			this.setSize(screenWidth, screenHeight);
 			this.setLocation(0, 0);
 			contentPane.setBounds(new Rectangle((screenWidth - 500) / 2, (screenHeight - 250) / 2, 500, 250));
@@ -31,12 +32,45 @@ public class RestingWindow extends JDialog {
 		LabelRemainingTime.setFont(LabelRemainingTime.getFont().deriveFont(180F));
 		if (!JNI.success) ButCloseMonitor.setVisible(false);
 		this.setVisible(true);
-		this.secondRemainging = restTime;
+		secondRemainging = restTime;
+		LabelRemainingTime.setText(twoDigitStr(restTime / 60) + ":" + twoDigitStr(restTime % 60));
+
+		timer = new Timer(1000, e -> tick());
+		timer.start();
+
+		ButCloseMonitor.addActionListener(e -> JNI.closeMonitor());
+		ButStop.addActionListener(e -> stop());
 	}
 
 	public static RestingWindow getInstance() {
-		if (theInstance == null) theInstance = new RestingWindow(10);
+		if (theInstance == null) theInstance = new RestingWindow(Main.timeModel.startRest());
 		return theInstance;
 	}
 
+	public static String twoDigitStr(int a) {
+		return (a > 9 ? Integer.toString(a) : "0" + a);
+	}
+
+	private void tick() {
+		secondRemainging--;
+		LabelRemainingTime.setText(twoDigitStr(secondRemainging / 60) + ":" + twoDigitStr(secondRemainging % 60));
+		if (secondRemainging == 0) {
+			stop();
+		}
+	}
+
+	private void stop() {
+		int nextInterval = Main.timeModel.stopRest();
+		HomePage homePage = HomePage.getInstance();
+		homePage.setTime(nextInterval);
+		this.timer.stop();
+		this.dispose();
+		theInstance = null;
+		if (homePage.getExtendedState() == JFrame.NORMAL) homePage.setVisible(true);
+
+	}
+
+	public void onReceive(int requestCode) {
+		System.out.println(requestCode);
+	}
 }

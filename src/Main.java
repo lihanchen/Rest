@@ -13,7 +13,7 @@ import java.util.Properties;
 public class Main {
 	static Internationalization strings = null;
 	static Properties settings;
-	static TimeModel timemodel;
+	static TimeModel timeModel;
 	static ImageIcon icon;
 
 	static {
@@ -46,21 +46,20 @@ public class Main {
 		}
 	}
 
-	public static void hotKeyPressed() {
-		HomePage.getInstance();
-	}
-
 	public static void main(String args[]) throws InterruptedException {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		JNI.init();
 		icon = new ImageIcon(Main.class.getResource("icon.png"));
-		timemodel = new TimeModel(45, 10);
+		timeModel = new TimeModel(Integer.parseInt(settings.getProperty("interval")) * 60, Integer.parseInt(settings.getProperty("period")) * 60);
 		HomePage hp = HomePage.getInstance();
-		hp.setTime(45 * 60);
-		RestingWindow.getInstance();
+		HotKeyHandler.addOperation(5, null);
+		HotKeyHandler.addOperation(4, RestingWindow.getInstance());
+		HotKeyHandler.addOperation(6, null);
+		HotKeyHandler.addOperation(7, null);
 	}
 
 }

@@ -25,7 +25,7 @@ public abstract class JNI {
 	public static void setHotKey() {
 		if (!success) return;
 		JIntellitype.getInstance().registerHotKey(0, JIntellitype.MOD_CONTROL + JIntellitype.MOD_ALT, (int) 'R');
-		JIntellitype.getInstance().addHotKeyListener(i -> Main.hotKeyPressed());
+		JIntellitype.getInstance().addHotKeyListener(i -> HotKeyHandler.popup());
 	}
 
 	public static void init() {

@@ -18,6 +18,7 @@ public class Internationalization {
 		this.map.put("reset?", "确定要重新计时吗");
 		this.map.put("errorNumberFormat", "输入无效");
 		this.map.put("error", "错误");
+		this.map.put("cancel", "取消");
 	}
 
 	public String getString(String name) {

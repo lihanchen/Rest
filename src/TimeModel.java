@@ -14,46 +14,50 @@ class Record {
 public class TimeModel {
 	private ArrayList<Record> records;
 	private Calendar lastTime;
-	private int period, interval;
+	private int period, interval, lastActionTime;
 
 	public TimeModel(int interval, int period) {
-		this.period = period * 60;
-		this.interval = interval * 60;
+		this.period = period;
+		this.interval = interval;
 		this.records = new ArrayList<Record>(30);
 		lastTime = Calendar.getInstance();
+		this.lastActionTime = interval;
 	}
 
 	public void change(int interval, int period) {
-		this.period = period * 60;
-		this.interval = interval * 60;
+		this.period = period;
+		this.interval = interval;
+		this.lastActionTime = interval;
 	}
 
 	public ArrayList<Record> getRecords() {
 		return records;
 	}
 
-	public int startRest() throws Exception {
-		if (records.size() % 2 == 0) throw new Exception("Illegal Rest");
+	public int startRest() {
+		if (records.size() % 2 != 0) System.out.println("ERROR1");
 		Calendar current = Calendar.getInstance();
 		int playingTime = difference(current, lastTime);
 		records.add(new Record(lastTime, playingTime));
 		lastTime = current;
-		if (playingTime <= interval)
-			return period;
+		if (playingTime <= lastActionTime)
+			lastActionTime = period;
 		else
-			return period * playingTime / interval;
+			lastActionTime = period * playingTime / lastActionTime;
+		return lastActionTime;
 	}
 
-	public int stopRest() throws Exception {
-		if (records.size() % 2 == 1) throw new Exception("Illegal Stop Rest");
+	public int stopRest() {
+		if (records.size() % 2 == 0) System.out.println("ERROR2");
 		Calendar current = Calendar.getInstance();
 		int restingTime = difference(current, lastTime);
 		records.add(new Record(lastTime, restingTime));
 		lastTime = current;
-		if (restingTime >= period)
-			return interval;
+		if (restingTime >= lastActionTime)
+			lastActionTime = interval;
 		else
-			return interval * restingTime / period;
+			lastActionTime = interval - interval * restingTime / lastActionTime;
+		return lastActionTime;
 	}
 
 	public int keepPlaying() throws Exception {
@@ -71,4 +75,11 @@ public class TimeModel {
 		return difference;
 	}
 
+	public int getPeriod() {
+		return period;
+	}
+
+	public int getInterval() {
+		return interval;
+	}
 }
