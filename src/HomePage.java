@@ -47,6 +47,10 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		this.pack();
 		this.setVisible(true);
 		this.setTime(Main.timeModel.getInterval());
+		this.textPeriod.setText("" + Main.timeModel.getPeriod() / 60);
+		this.textInterval.setText("" + Main.timeModel.getInterval() / 60);
+		this.checkFullScreen.setSelected(Boolean.parseBoolean(Main.settings.getProperty("fullScreen")));
+		this.checkCloseMonitor.setSelected(Boolean.parseBoolean(Main.settings.getProperty("closeMonitor")));
 
 		this.addWindowListener(this);
 		ButRemaining.addActionListener(e -> reset());
@@ -121,9 +125,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	public void reset() {
 		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.WARNING_MESSAGE)
 				== JOptionPane.YES_OPTION) {
-			int newInterval = Integer.parseInt(Main.settings.getProperty("interval"));
-			interval = newInterval;
-			LabelRemaining.setText(twoDigitStr(newInterval) + ":00");
+			setTime(Main.timeModel.getInterval());
 		}
 	}
 

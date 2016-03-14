@@ -11,7 +11,8 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 	private JButton ButStop;
 	private JPanel mainPanel;
 	private int secondRemainging;
-	private Timer timer;
+	private Timer timer, pauseTimer;
+	private int pauseCounter = 0;
 
 	public RestingWindow(int restTime) {
 		this.add(contentPane);
@@ -41,6 +42,10 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 
 		ButCloseMonitor.addActionListener(e -> JNI.closeMonitor());
 		ButStop.addActionListener(e -> stop());
+		ButPause.addActionListener(e -> pause());
+
+		if (Boolean.parseBoolean(Main.settings.getProperty("closeMonitor")))
+			if (JNI.success) JNI.closeMonitor();
 	}
 
 	public static RestingWindow getInstance() {
@@ -68,10 +73,28 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		this.dispose();
 		theInstance = null;
 		if (homePage.getExtendedState() == JFrame.NORMAL) homePage.setVisible(true);
-
+		if (JNI.success) JNI.openMonitor();
+		Main.playSound();
 	}
 
 	public void onReceive(String requestCode) {
-		System.out.println(requestCode);
+		unPause();
+	}
+
+	public void pause() {
+		pauseCounter++;
+		this.timer.stop();
+		HotKeyHandler.addOperation(Main.strings.getString("ContinueResting"), this);
+		pauseTimer = new Timer(30000, e -> unPause());
+		pauseTimer.start();
+		this.setVisible(false);
+	}
+
+	public void unPause() {
+		pauseTimer.stop();
+		HotKeyHandler.removeOperation(Main.strings.getString("ContinueResting"));
+		this.setVisible(true);
+		this.timer.start();
+		if (pauseCounter >= 2) this.ButPause.setEnabled(false);
 	}
 }

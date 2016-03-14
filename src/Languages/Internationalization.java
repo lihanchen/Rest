@@ -22,6 +22,8 @@ public class Internationalization {
 		this.map.put("showWindow", "显示主窗口");
 		this.map.put("startRest", "立即开始休息");
 		this.map.put("skipRest", "跳过休息");
+		this.map.put("ContinueResting", "继续休息");
+
 	}
 
 	public String getString(String name) {
