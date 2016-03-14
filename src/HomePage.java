@@ -35,6 +35,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	private int interval;
 	private volatile boolean restAfterWaiting;
 	private Thread mainThread;
+	private short skipCounter = 0;
 
 	private HomePage() {
 		this.setContentPane(this.PaneMain);
@@ -181,8 +182,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			timer.cancel();
 			timer = null;
 		}
-		if (automatic == true) {
-			HotKeyHandler.addOperation(Main.strings.getString("skipRest"), this);
+		if (automatic) {
+			if (skipCounter <= 2) HotKeyHandler.addOperation(Main.strings.getString("skipRest"), this);
 			HotKeyHandler.addOperation(Main.strings.getString("startRest"), this);
 			mainThread = Thread.currentThread();
 			try {
@@ -192,6 +193,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				Thread.sleep(15000);
 			} catch (InterruptedException e) {
 				if (!restAfterWaiting) {
+					skipCounter++;
 					this.setTime(Main.timeModel.keepPlaying());
 					return;
 				}
