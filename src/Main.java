@@ -56,10 +56,6 @@ public class Main {
 		icon = new ImageIcon(Main.class.getResource("icon.png"));
 		timeModel = new TimeModel(Integer.parseInt(settings.getProperty("interval")) * 60, Integer.parseInt(settings.getProperty("period")) * 60);
 		HomePage hp = HomePage.getInstance();
-		HotKeyHandler.addOperation(5, null);
-		HotKeyHandler.addOperation(4, RestingWindow.getInstance());
-		HotKeyHandler.addOperation(6, null);
-		HotKeyHandler.addOperation(7, null);
 	}
 
 }

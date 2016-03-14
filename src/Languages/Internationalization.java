@@ -19,6 +19,9 @@ public class Internationalization {
 		this.map.put("errorNumberFormat", "输入无效");
 		this.map.put("error", "错误");
 		this.map.put("cancel", "取消");
+		this.map.put("showWindow", "显示主窗口");
+		this.map.put("startRest", "立即开始休息");
+		this.map.put("skipRest", "跳过休息");
 	}
 
 	public String getString(String name) {

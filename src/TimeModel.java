@@ -60,9 +60,7 @@ public class TimeModel {
 		return lastActionTime;
 	}
 
-	public int keepPlaying() throws Exception {
-		lastTime = records.get(records.size() - 1).time;
-		records.remove(records.size() - 1);
+	public int keepPlaying() {
 		return (int) (0.2 * interval);
 	}
 

@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class RestingWindow extends JDialog implements HotKeyReceiver {
+
 	private static RestingWindow theInstance;
 	private JPanel contentPane;
 	private JLabel LabelRemainingTime;
@@ -70,7 +71,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 
 	}
 
-	public void onReceive(int requestCode) {
+	public void onReceive(String requestCode) {
 		System.out.println(requestCode);
 	}
 }

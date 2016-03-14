@@ -1,13 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
 interface HotKeyReceiver {
-	void onReceive(int requestCode);
+	void onReceive(String requestCode);
 }
 
 public class HotKeyHandler extends JDialog {
-	private static TreeMap<Integer, HotKeyReceiver> operations = new TreeMap<Integer, HotKeyReceiver>();
+	private static LinkedHashMap<String, HotKeyReceiver> operations = new LinkedHashMap<>();
 	private static HotKeyHandler theInstance;
 	private JPanel mainPane;
 
@@ -17,11 +17,17 @@ public class HotKeyHandler extends JDialog {
 		this.setLocationRelativeTo(null);
 		this.setSize(200, 160 * (operations.size() + 1));
 		this.setVisible(true);
-		for (Integer i : operations.keySet()) {
-			JButton but = new JButton(Main.strings.getString("cancel"));
-			but.addActionListener(e -> operations.get(i).onReceive(i));
+		this.setAlwaysOnTop(true);
+		this.toFront();
+		for (String s : operations.keySet()) {
+			JButton but = new JButton(s);
+			but.addActionListener(e -> {
+				operations.get(s).onReceive(s);
+				this.dispose();
+				theInstance = null;
+			});
 			but.setPreferredSize(new Dimension(150, 50));
-			mainPane.add(but);
+			mainPane.add(but, 0);
 		}
 		JButton butExit = new JButton(Main.strings.getString("cancel"));
 		butExit.addActionListener(e -> {
@@ -33,23 +39,23 @@ public class HotKeyHandler extends JDialog {
 		theInstance = this;
 		this.setContentPane(mainPane);
 		this.setLocationRelativeTo(null);
-		this.setSize(200, 75 * (operations.size() + 1));
+		this.setSize(200, 20 + 70 * (operations.size() + 1));
 		this.setVisible(true);
 
 	}
 
-	public static void addOperation(int requestCode, HotKeyReceiver receiver) {
+	public static void addOperation(String requestCode, HotKeyReceiver receiver) {
 		operations.put(requestCode, receiver);
 	}
 
-	public static void removeOperation(int requestCode) {
+	public static void removeOperation(String requestCode) {
 		operations.remove(requestCode);
 	}
 
 	public static void popup() {
 		if (theInstance != null)
 			theInstance.toFront();
-		else
+		else if (operations.size() != 0)
 			new HotKeyHandler();
 	}
 

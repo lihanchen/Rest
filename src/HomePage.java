@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.TimerTask;
 
-public class HomePage extends JFrame implements WindowListener {
+public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	private static HomePage theInstance = null;
 	public SystemTray tray;
 	public TrayIcon trayIcon;
@@ -33,6 +33,8 @@ public class HomePage extends JFrame implements WindowListener {
 	private JPanel GamePanel;
 	private java.util.Timer timer = null;
 	private int interval;
+	private volatile boolean restAfterWaiting;
+	private Thread mainThread;
 
 	private HomePage() {
 		this.setContentPane(this.PaneMain);
@@ -104,6 +106,7 @@ public class HomePage extends JFrame implements WindowListener {
 				}
 			});
 		}
+		HotKeyHandler.addOperation(Main.strings.getString("showWindow"), this);
 	}
 
 	public static String twoDigitStr(int a) {
@@ -131,9 +134,8 @@ public class HomePage extends JFrame implements WindowListener {
 		timer.scheduleAtFixedRate(new TimerTask() { //lambda doesn't work
 			public void run() {
 				HomePage.this.interval--;
-				if (HomePage.this.interval != 0) {
-					ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
-				} else {
+				ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
+				if (HomePage.this.interval == 0) {
 					HomePage.this.timer.cancel();
 					rest(true);
 				}
@@ -179,11 +181,45 @@ public class HomePage extends JFrame implements WindowListener {
 			timer.cancel();
 			timer = null;
 		}
-		if (automatic == automatic) {
-
+		if (automatic == true) {
+			HotKeyHandler.addOperation(Main.strings.getString("skipRest"), this);
+			HotKeyHandler.addOperation(Main.strings.getString("startRest"), this);
+			mainThread = Thread.currentThread();
+			try {
+				Main.playSound();
+				Thread.sleep(15000);
+				Main.playSound();
+				Thread.sleep(15000);
+			} catch (InterruptedException e) {
+				if (!restAfterWaiting) {
+					this.setTime(Main.timeModel.keepPlaying());
+					return;
+				}
+			}
 		}
+		HotKeyHandler.removeOperation(Main.strings.getString("showWindow"));
 		this.setVisible(false);
 		RestingWindow.getInstance();
 	}
 
+	public void onReceive(String requestCode) {
+		if (requestCode.equals(Main.strings.getString("showWindow"))) {
+			tray.remove(trayIcon);
+			this.setVisible(true);
+			this.setExtendedState(JFrame.NORMAL);
+			this.toFront();
+		}
+		if (requestCode.equals(Main.strings.getString("startRest"))) {
+			HotKeyHandler.removeOperation(Main.strings.getString("startRest"));
+			HotKeyHandler.removeOperation(Main.strings.getString("skipRest"));
+			restAfterWaiting = true;
+			mainThread.interrupt();
+		}
+		if (requestCode.equals(Main.strings.getString("skipRest"))) {
+			HotKeyHandler.removeOperation(Main.strings.getString("startRest"));
+			HotKeyHandler.removeOperation(Main.strings.getString("skipRest"));
+			restAfterWaiting = false;
+			mainThread.interrupt();
+		}
+	}
 }
