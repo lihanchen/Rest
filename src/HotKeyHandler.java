@@ -46,10 +46,20 @@ public class HotKeyHandler extends JDialog {
 
 	public static void addOperation(String requestCode, HotKeyReceiver receiver) {
 		operations.put(requestCode, receiver);
+		if (theInstance != null) {
+			theInstance.dispose();
+			theInstance = null;
+			popup();
+		}
 	}
 
 	public static void removeOperation(String requestCode) {
 		operations.remove(requestCode);
+		if (theInstance != null) {
+			theInstance.dispose();
+			theInstance = null;
+			popup();
+		}
 	}
 
 	public static void popup() {

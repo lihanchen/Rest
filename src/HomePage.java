@@ -107,7 +107,6 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				}
 			});
 		}
-		HotKeyHandler.addOperation(Main.strings.getString("showWindow"), this);
 	}
 
 	public static String twoDigitStr(int a) {
@@ -142,6 +141,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				}
 			}
 		}, 0, 1000);
+		HotKeyHandler.addOperation(Main.strings.getString("showWindow"), this);
 	}
 
 	public void windowOpened(WindowEvent e) {
