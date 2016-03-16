@@ -22,9 +22,9 @@ public class HotKeyHandler extends JDialog {
 		for (String s : operations.keySet()) {
 			JButton but = new JButton(s);
 			but.addActionListener(e -> {
-				operations.get(s).onReceive(s);
 				this.dispose();
 				theInstance = null;
+				operations.get(s).onReceive(s);
 			});
 			but.setPreferredSize(new Dimension(150, 50));
 			mainPane.add(but, 0);

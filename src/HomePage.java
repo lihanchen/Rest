@@ -41,10 +41,10 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		this.setContentPane(this.PaneMain);
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.setTitle(Main.strings.getString("title"));
-		this.setLocationRelativeTo(null);
 		this.setResizable(false);
 		this.setIconImage(Main.icon.getImage());
 		this.pack();
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 		this.setTime(Main.timeModel.getInterval());
 		this.textPeriod.setText("" + Main.timeModel.getPeriod() / 60);
@@ -144,6 +144,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			}
 		}, 0, 1000);
 		HotKeyHandler.addOperation(Main.strings.getString("showWindow"), this);
+		HotKeyHandler.addOperation(Main.strings.getString("RestNow"), this);
 	}
 
 	public void windowOpened(WindowEvent e) {
@@ -184,6 +185,9 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			timer.cancel();
 			timer = null;
 		}
+		HotKeyHandler.removeOperation(Main.strings.getString("showWindow"));
+		HotKeyHandler.removeOperation(Main.strings.getString("RestNow"));
+		this.setVisible(false);
 		if (automatic) {
 			if (skipCounter <= 2) HotKeyHandler.addOperation(Main.strings.getString("skipRest"), this);
 			HotKeyHandler.addOperation(Main.strings.getString("startRest"), this);
@@ -193,6 +197,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				Thread.sleep(15000);
 				Main.playSound();
 				Thread.sleep(15000);
+				HotKeyHandler.removeOperation(Main.strings.getString("startRest"));
+				HotKeyHandler.removeOperation(Main.strings.getString("skipRest"));
 			} catch (InterruptedException e) {
 				if (!restAfterWaiting) {
 					skipCounter++;
@@ -201,8 +207,6 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				}
 			}
 		}
-		HotKeyHandler.removeOperation(Main.strings.getString("showWindow"));
-		this.setVisible(false);
 		RestingWindow.getInstance();
 	}
 
@@ -224,6 +228,9 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			HotKeyHandler.removeOperation(Main.strings.getString("skipRest"));
 			restAfterWaiting = false;
 			mainThread.interrupt();
+		}
+		if (requestCode.equals(Main.strings.getString("RestNow"))) {
+			rest(false);
 		}
 	}
 }

@@ -61,6 +61,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		secondRemainging--;
 		LabelRemainingTime.setText(twoDigitStr(secondRemainging / 60) + ":" + twoDigitStr(secondRemainging % 60));
 		if (secondRemainging == 0) {
+			Main.playSound();
 			stop();
 		}
 	}
@@ -74,7 +75,6 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		theInstance = null;
 		if (homePage.getExtendedState() == JFrame.NORMAL) homePage.setVisible(true);
 		if (JNI.success) JNI.openMonitor();
-		Main.playSound();
 	}
 
 	public void onReceive(String requestCode) {
