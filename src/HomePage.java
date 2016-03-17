@@ -4,6 +4,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.TimerTask;
 
 public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
@@ -27,10 +29,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	private JButton ButRestNow;
 	private JLabel LabelSignature;
 	private JTable TableHistory;
-	private JTable TableGame;
 	private JCheckBox checkFullScreen;
 	private JCheckBox checkCloseMonitor;
-	private JPanel GamePanel;
 	private java.util.Timer timer = null;
 	private int interval;
 	private volatile boolean restAfterWaiting;
@@ -52,6 +52,18 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		this.checkFullScreen.setSelected(Boolean.parseBoolean(Main.settings.getProperty("fullScreen")));
 		this.checkCloseMonitor.setSelected(Boolean.parseBoolean(Main.settings.getProperty("closeMonitor")));
 
+		LabelSetting1.setText(Main.strings.getString("labelEvery"));
+		LabelSetting2.setText(Main.strings.getString("Minutes") + " " + Main.strings.getString("Rest"));
+		LabelSetting3.setText(Main.strings.getString("Minutes"));
+		ButSet.setText(Main.strings.getString("butSet"));
+		LabelRemaining.setText(Main.strings.getString("labelRemain"));
+		checkCloseMonitor.setText(Main.strings.getString("checkCloseMonitor"));
+		checkFullScreen.setText(Main.strings.getString("checkFullScreen"));
+		LabelSignature.setText(Main.strings.getString("signature"));
+		Tabs.setTitleAt(0, Main.strings.getString("HomePane"));
+		Tabs.setTitleAt(1, Main.strings.getString("HistoryPane"));
+		Tabs.setTitleAt(2, Main.strings.getString("GamePane"));
+
 		this.addWindowListener(this);
 		ButRemaining.addActionListener(e -> reset());
 		ButRestNow.addActionListener(e -> rest(false));
@@ -71,6 +83,16 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		});
 		checkCloseMonitor.addActionListener(e -> Main.settings.put("closeMonitor", "" + checkCloseMonitor.isSelected()));
 		checkFullScreen.addActionListener(e -> Main.settings.put("fullScreen", "" + checkFullScreen.isSelected()));
+		Tabs.addChangeListener(e -> {
+			switch (Tabs.getSelectedIndex()) {
+				case 1:
+					showHistory();
+					break;
+				case 2:
+					showGameTime();
+					break;
+			}
+		});
 
 
 		//мпел
@@ -111,6 +133,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				}
 			});
 		}
+
+		if (!JNI.success) Tabs.remove(2);
 	}
 
 	public static String twoDigitStr(int a) {
@@ -123,7 +147,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	}
 
 	public void reset() {
-		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.WARNING_MESSAGE)
+		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
 				== JOptionPane.YES_OPTION) {
 			setTime(Main.timeModel.getInterval());
 		}
@@ -203,6 +227,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				if (!restAfterWaiting) {
 					skipCounter++;
 					this.setTime(Main.timeModel.keepPlaying());
+					if (this.getExtendedState() == JFrame.NORMAL)
+						this.setVisible(true);
 					return;
 				}
 			}
@@ -232,5 +258,28 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		if (requestCode.equals(Main.strings.getString("RestNow"))) {
 			rest(false);
 		}
+	}
+
+	public void showHistory() {
+		String[] columnNames = {Main.strings.getString("StartTime"), Main.strings.getString("Action"), Main.strings.getString("Duration")};
+		ArrayList<Record> input = Main.timeModel.getRecords();
+		String[][] data = new String[input.size()][3];
+		for (int i = 0; i < input.size(); i++) {
+			Record record = input.get(i);
+			record.time.add(Calendar.MINUTE, -1 * record.period);
+			data[i] = new String[]{twoDigitStr(record.time.get(Calendar.HOUR_OF_DAY)) + ":" + twoDigitStr(record.time.get(Calendar.MINUTE)),
+					i % 2 == 0 ? Main.strings.getString("UseComputer") : Main.strings.getString("Rest"), "" +
+					record.period + Main.strings.getString("Minutes")};
+		}
+		PaneHistory.removeAll();
+		JTable table = new JTable(data, columnNames);
+		table.setBackground(new Color(240, 240, 240));
+		table.setEnabled(false);
+		table.setRowHeight(25);
+		PaneHistory.add(table);
+	}
+
+	public void showGameTime() {
+
 	}
 }

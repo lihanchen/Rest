@@ -31,7 +31,7 @@
               <maximumSize width="250" height="-1"/>
               <minimumSize width="250" height="-1"/>
               <preferredSize width="250" height="-1"/>
-              <visible value="true"/>
+              <visible value="false"/>
             </properties>
             <border type="none"/>
             <children>
@@ -186,25 +186,15 @@
               </component>
             </children>
           </grid>
-          <grid id="2dbd3" binding="PaneHistory" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
+          <grid id="2dbd3" binding="PaneHistory" layout-manager="CardLayout" hgap="0" vgap="0">
             <constraints>
               <tabbedpane title="History"/>
             </constraints>
-            <properties/>
+            <properties>
+              <background color="-986896"/>
+            </properties>
             <border type="none"/>
-            <children>
-              <component id="64b98" class="javax.swing.JTable" binding="TableHistory">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                    <preferred-size width="200" height="300"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <background color="-986896"/>
-                </properties>
-              </component>
-            </children>
+            <children/>
           </grid>
           <grid id="6540c" binding="PaneGame" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints>
@@ -212,14 +202,7 @@
             </constraints>
             <properties/>
             <border type="none"/>
-            <children>
-              <component id="1a4e3" class="javax.swing.JTable" binding="TableGame">
-                <constraints border-constraint="Center"/>
-                <properties>
-                  <background color="-986896"/>
-                </properties>
-              </component>
-            </children>
+            <children/>
           </grid>
         </children>
       </tabbedpane>

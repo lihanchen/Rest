@@ -13,13 +13,13 @@ class Record {
 
 public class TimeModel {
 	private ArrayList<Record> records;
-	private Calendar lastTime, secondLastTime;
+	private Calendar lastTime;
 	private int period, interval, lastActionTime;
 
 	public TimeModel(int interval, int period) {
 		this.period = period;
 		this.interval = interval;
-		this.records = new ArrayList<Record>(30);
+		this.records = new ArrayList<>(30);
 		lastTime = Calendar.getInstance();
 		this.lastActionTime = interval;
 	}
@@ -38,8 +38,7 @@ public class TimeModel {
 		if (records.size() % 2 != 0) System.out.println("ERROR1");
 		Calendar current = Calendar.getInstance();
 		int playingTime = difference(current, lastTime);
-		records.add(new Record(lastTime, playingTime));
-		secondLastTime = lastTime;
+		records.add(new Record(lastTime, playingTime / 60));
 		lastTime = current;
 		if (playingTime <= lastActionTime)
 			lastActionTime = period;
@@ -53,8 +52,7 @@ public class TimeModel {
 		Calendar current = Calendar.getInstance();
 		int restingTime = difference(current, lastTime);
 		if (restingTime < 30) { //Too short, assume keep playing
-			current = lastTime;
-			lastTime = secondLastTime;
+			lastTime = records.get(records.size() - 1).time;
 			records.remove(records.size() - 1);
 			return keepPlaying();
 		}

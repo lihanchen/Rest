@@ -20,6 +20,11 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		this.setAlwaysOnTop(true);
 		this.pack();
 		this.setLayout(null);
+
+		ButCloseMonitor.setText(Main.strings.getString("checkCloseMonitor"));
+		ButPause.setText(Main.strings.getString("butPause"));
+		ButStop.setText(Main.strings.getString("butStop"));
+
 		//FullScreen
 		if (Boolean.parseBoolean(Main.settings.getProperty("fullScreen"))) {
 			int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
