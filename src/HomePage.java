@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.TimerTask;
 
 public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
@@ -46,7 +47,6 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
-		this.setTime(Main.timeModel.getInterval());
 		this.textPeriod.setText("" + Main.timeModel.getPeriod() / 60);
 		this.textInterval.setText("" + Main.timeModel.getInterval() / 60);
 		this.checkFullScreen.setSelected(Boolean.parseBoolean(Main.settings.getProperty("fullScreen")));
@@ -135,6 +135,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		}
 
 		if (!JNI.success) Tabs.remove(2);
+
+		this.setTime(Main.timeModel.getInterval());
 	}
 
 	public static String twoDigitStr(int a) {
@@ -160,6 +162,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		timer.scheduleAtFixedRate(new TimerTask() { //lambda doesn't work
 			public void run() {
 				HomePage.this.interval--;
+				trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 				ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 				if (HomePage.this.interval == 0) {
 					HomePage.this.timer.cancel();
@@ -189,7 +192,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	public void windowIconified(WindowEvent e) {
 		try {
 			tray.add(trayIcon);
-			trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + "/");//TODO
+			trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 			HomePage.this.setVisible(false);
 		} catch (AWTException e1) {
 		}
@@ -266,7 +269,6 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		String[][] data = new String[input.size()][3];
 		for (int i = 0; i < input.size(); i++) {
 			Record record = input.get(i);
-			record.time.add(Calendar.MINUTE, -1 * record.period);
 			data[i] = new String[]{twoDigitStr(record.time.get(Calendar.HOUR_OF_DAY)) + ":" + twoDigitStr(record.time.get(Calendar.MINUTE)),
 					i % 2 == 0 ? Main.strings.getString("UseComputer") : Main.strings.getString("Rest"), "" +
 					record.period + Main.strings.getString("Minutes")};
@@ -280,6 +282,25 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	}
 
 	public void showGameTime() {
-
+		String[] columnNames = {Main.strings.getString("Game"), Main.strings.getString("Time")};
+		HashMap<String, String> gameNames = GameMonitor.getInstance().getGameNames();
+		ArrayList<String[]> dataPre = new ArrayList<>(gameNames.size());
+		for (String psName : gameNames.keySet()) {
+			String count = Main.settings.getProperty("GAME" + psName);
+			if ((count != null) && (!count.equals("0"))) {
+				int time = Integer.parseInt(count);
+				dataPre.add(new String[]{gameNames.get(psName), "" + (time / 60) + Main.strings.getString("Hour") + (time % 60) + Main.strings.getString("Minutes")});
+			}
+		}
+		String data[][] = new String[dataPre.size()][2];
+		int i = 0;
+		for (String[] item : dataPre)
+			data[i++] = item;
+		PaneGame.removeAll();
+		JTable table = new JTable(data, columnNames);
+		table.setBackground(new Color(240, 240, 240));
+		table.setEnabled(false);
+		table.setRowHeight(25);
+		PaneGame.add(table);
 	}
 }
