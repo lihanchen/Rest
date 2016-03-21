@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 interface HotKeyReceiver {
@@ -41,6 +44,38 @@ public class HotKeyHandler extends JDialog {
 		this.setLocationRelativeTo(null);
 		this.setSize(200, 20 + 70 * (operations.size() + 1));
 		this.setVisible(true);
+
+		this.setFocusable(true);
+		this.requestFocus();
+		this.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+				if (c >= '1' && c <= '0' + operations.size()) {
+					int count = operations.size() - (c - '0');
+					Iterator<String> s = operations.keySet().iterator();
+					while (count-- > 0)
+						s.next();
+					String key = s.next();
+					HotKeyHandler.this.dispose();
+					theInstance = null;
+					operations.get(key).onReceive(key);
+				} else if (c == '1' + operations.size()) {
+					HotKeyHandler.this.dispose();
+					theInstance = null;
+				}
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+		});
 
 	}
 

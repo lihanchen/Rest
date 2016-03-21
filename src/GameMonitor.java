@@ -1,22 +1,24 @@
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.HashMap;
 
 public class GameMonitor {
-	final public static int MonitorInterval = 5;
+	final public static int MonitorInterval = 1;
 	private static GameMonitor ourInstance;
 
 	static {
 		ourInstance = JNI.success ? new GameMonitor() : null;
 	}
 
+	public Timer timer;
 	HashMap<String, String> gameNames;
 
 	private GameMonitor() {
 		Boolean newDay = false;
 		Calendar today = Calendar.getInstance();
-		String todayStr = "" + today.get(Calendar.MONTH) + "-" + today.get(Calendar.DATE);
+		String todayStr = "" + (today.get(Calendar.MONTH) + 1) + "-" + today.get(Calendar.DATE);
 		if (!Main.settings.getProperty("GameToday").equals(todayStr)) {
 			newDay = true;
 			Main.settings.setProperty("GameToday", todayStr);
@@ -29,7 +31,8 @@ public class GameMonitor {
 			gameNames.put(ps, name);
 			if (newDay) Main.settings.remove("GAME" + ps);
 		}
-		new javax.swing.Timer(5 * 60000, e -> check());
+		timer = new javax.swing.Timer(MonitorInterval * 60000, e -> check());
+		timer.start();
 	}
 
 	public static GameMonitor getInstance() {
@@ -41,6 +44,7 @@ public class GameMonitor {
 	}
 
 	public void check() {
+		System.out.println("checked");
 		String psName;
 		try {
 			Process taskList = Runtime.getRuntime().exec("tasklist /nh /fo csv");

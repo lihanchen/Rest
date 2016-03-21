@@ -51,6 +51,10 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 
 		if (Boolean.parseBoolean(Main.settings.getProperty("closeMonitor")))
 			if (JNI.success) JNI.closeMonitor();
+
+		if (JNI.success) {
+			GameMonitor.getInstance().timer.stop();
+		}
 	}
 
 	public static RestingWindow getInstance() {
@@ -78,8 +82,17 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		this.timer.stop();
 		this.dispose();
 		theInstance = null;
-		if (homePage.getExtendedState() == JFrame.NORMAL) homePage.setVisible(true);
-		if (JNI.success) JNI.openMonitor();
+		if (homePage.getExtendedState() == JFrame.NORMAL)
+			homePage.setVisible(true);
+		else
+			try {
+				HomePage.getInstance().tray.add(HomePage.getInstance().trayIcon);
+			} catch (Exception e) {
+			}
+		if (JNI.success) {
+			JNI.openMonitor();
+			GameMonitor.getInstance().timer.start();
+		}
 	}
 
 	public void onReceive(String requestCode) {

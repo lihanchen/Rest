@@ -29,7 +29,6 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	private JButton ButSet;
 	private JButton ButRestNow;
 	private JLabel LabelSignature;
-	private JTable TableHistory;
 	private JCheckBox checkFullScreen;
 	private JCheckBox checkCloseMonitor;
 	private java.util.Timer timer = null;
@@ -104,7 +103,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			MenuItem itemClear = new MenuItem(Main.strings.getString("ResetTime"));
 			itemClear.addActionListener(e -> reset());
 			MenuItem itemExit = new MenuItem(Main.strings.getString("exit"));
-			itemExit.addActionListener(e -> System.exit(0));
+			itemExit.addActionListener(e -> exit());
 			popMenu.add(itemRestNow);
 			popMenu.add(itemClear);
 			popMenu.add(itemExit);
@@ -129,6 +128,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 						HomePage.this.setVisible(true);
 						HomePage.this.setExtendedState(JFrame.NORMAL);
 						HomePage.this.toFront();
+						HomePage.this.Tabs.setSelectedIndex(0);
 					}
 				}
 			});
@@ -178,6 +178,10 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	}
 
 	public void windowClosing(WindowEvent e) {
+		exit();
+	}
+
+	private void exit() {
 		Toolkit.getDefaultToolkit().beep();
 		int answer = JOptionPane.showConfirmDialog(this, Main.strings.getString("want exit?"), Main.strings.getString("exit"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 		if (answer == JOptionPane.YES_OPTION) {
@@ -237,6 +241,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			}
 		}
 		RestingWindow.getInstance();
+		tray.remove(trayIcon);
 	}
 
 	public void onReceive(String requestCode) {
@@ -277,6 +282,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		JTable table = new JTable(data, columnNames);
 		table.setBackground(new Color(240, 240, 240));
 		table.setEnabled(false);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setRowHeight(25);
 		PaneHistory.add(table);
 	}
