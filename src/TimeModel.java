@@ -52,7 +52,7 @@ public class TimeModel {
 		if (records.size() % 2 == 0) System.out.println("ERROR2");
 		Calendar current = Calendar.getInstance();
 		int restingTime = difference(current, lastTime);
-		if (restingTime < 0) { //Too short, assume keep playing
+		if (restingTime < 30) { //Too short, assume keep playing
 			lastTime = records.get(records.size() - 1).time;
 			records.remove(records.size() - 1);
 			lastActionTime = secondLastActionTime;

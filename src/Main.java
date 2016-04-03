@@ -55,7 +55,7 @@ public class Main {
 		JNI.init();
 		icon = new ImageIcon(Main.class.getResource("icon.png"));
 		timeModel = new TimeModel(Integer.parseInt(settings.getProperty("interval")) * 60, Integer.parseInt(settings.getProperty("period")) * 60);
-		HomePage hp = HomePage.getInstance();
+		HomePage.getInstance();
 		GameMonitor.getInstance();
 	}
 

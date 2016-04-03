@@ -94,7 +94,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		});
 
 
-		//ÍÐÅÌ
+		//æ‰˜ç›˜
 		if (SystemTray.isSupported()) {
 			tray = SystemTray.getSystemTray();
 			popMenu = new PopupMenu();
@@ -152,6 +152,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
 				== JOptionPane.YES_OPTION) {
 			setTime(Main.timeModel.getInterval());
+			Main.timeModel = new TimeModel(Main.timeModel.getInterval(), Main.timeModel.getPeriod());
 		}
 	}
 
@@ -198,7 +199,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			tray.add(trayIcon);
 			trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 			HomePage.this.setVisible(false);
-		} catch (AWTException e1) {
+		} catch (AWTException ignored) {
 		}
 	}
 
@@ -219,6 +220,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		HotKeyHandler.removeOperation(Main.strings.getString("showWindow"));
 		HotKeyHandler.removeOperation(Main.strings.getString("RestNow"));
 		this.setVisible(false);
+		tray.remove(trayIcon);
 		if (automatic) {
 			if (skipCounter <= 2) HotKeyHandler.addOperation(Main.strings.getString("skipRest"), this);
 			HotKeyHandler.addOperation(Main.strings.getString("startRest"), this);
@@ -241,7 +243,6 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			}
 		}
 		RestingWindow.getInstance();
-		tray.remove(trayIcon);
 	}
 
 	public void onReceive(String requestCode) {
@@ -262,6 +263,11 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			HotKeyHandler.removeOperation(Main.strings.getString("skipRest"));
 			restAfterWaiting = false;
 			mainThread.interrupt();
+			try {
+				if (this.getExtendedState() == JFrame.ICONIFIED)
+					tray.add(trayIcon);
+			} catch (Exception ignored) {
+			}
 		}
 		if (requestCode.equals(Main.strings.getString("RestNow"))) {
 			rest(false);

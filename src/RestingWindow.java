@@ -87,7 +87,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		else
 			try {
 				HomePage.getInstance().tray.add(HomePage.getInstance().trayIcon);
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 		if (JNI.success) {
 			JNI.openMonitor();

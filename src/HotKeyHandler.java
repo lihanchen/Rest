@@ -51,6 +51,7 @@ public class HotKeyHandler extends JDialog {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();
+				if (c == 10) c = '1';
 				if (c >= '1' && c <= '0' + operations.size()) {
 					int count = operations.size() - (c - '0');
 					Iterator<String> s = operations.keySet().iterator();
