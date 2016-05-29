@@ -23,7 +23,10 @@ public class Main {
 			settings = new Properties();
 			settings.load(new FileInputStream(new File("Settings.properties")));
 		} catch (Exception e) {//Defaults
-
+			settings.setProperty("interval", "60");
+			settings.setProperty("period", "10");
+			settings.setProperty("GameToday", " ");
+			settings.setProperty("Games", "Dota2:dota.exe");
 		}
 	}
 
