@@ -258,6 +258,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				}
 			}
 		}
+		skipCounter = 0;
 		RestingWindow.getInstance();
 	}
 
