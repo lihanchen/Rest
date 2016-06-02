@@ -31,11 +31,14 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	private JLabel LabelSignature;
 	private JCheckBox checkFullScreen;
 	private JCheckBox checkCloseMonitor;
+	private JCheckBox checkTimerOn;
 	private java.util.Timer timer = null;
+	private boolean isTimerOn = false;
 	private int interval;
 	private volatile boolean restAfterWaiting;
 	private Thread mainThread;
 	private short skipCounter = 0;
+	private CheckboxMenuItem itemAuto;
 
 	private HomePage() {
 		this.setContentPane(this.PaneMain);
@@ -58,6 +61,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		LabelRemaining.setText(Main.strings.getString("labelRemain"));
 		checkCloseMonitor.setText(Main.strings.getString("checkCloseMonitor"));
 		checkFullScreen.setText(Main.strings.getString("checkFullScreen"));
+		checkTimerOn.setText(Main.strings.getString("checkAutoRest"));
 		LabelSignature.setText(Main.strings.getString("signature"));
 		Tabs.setTitleAt(0, Main.strings.getString("HomePane"));
 		Tabs.setTitleAt(1, Main.strings.getString("HistoryPane"));
@@ -82,6 +86,10 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		});
 		checkCloseMonitor.addActionListener(e -> Main.settings.put("closeMonitor", "" + checkCloseMonitor.isSelected()));
 		checkFullScreen.addActionListener(e -> Main.settings.put("fullScreen", "" + checkFullScreen.isSelected()));
+		checkTimerOn.addActionListener(e -> {
+			isTimerOn = checkTimerOn.isSelected();
+			itemAuto.setState(checkTimerOn.isSelected());
+		});
 		Tabs.addChangeListener(e -> {
 			switch (Tabs.getSelectedIndex()) {
 				case 1:
@@ -102,10 +110,16 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			itemRestNow.addActionListener(e -> rest(false));
 			MenuItem itemClear = new MenuItem(Main.strings.getString("ResetTime"));
 			itemClear.addActionListener(e -> reset());
+			itemAuto = new CheckboxMenuItem(Main.strings.getString("checkAutoRest"), true);
+			itemAuto.addItemListener(e -> {
+				isTimerOn = itemAuto.getState();
+				checkTimerOn.setSelected(itemAuto.getState());
+			});
 			MenuItem itemExit = new MenuItem(Main.strings.getString("exit"));
 			itemExit.addActionListener(e -> exit());
 			popMenu.add(itemRestNow);
 			popMenu.add(itemClear);
+			popMenu.add(itemAuto);
 			popMenu.add(itemExit);
 			trayIcon = new TrayIcon(Main.icon.getImage(), Main.strings.getString("signature"), popMenu);
 			trayIcon.setImageAutoSize(true);
@@ -157,11 +171,13 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	}
 
 	public void setTime(int interval) {
+		isTimerOn = true;
 		this.interval = interval + 1;
 		if (timer != null) timer.cancel();
 		timer = new java.util.Timer();
 		timer.scheduleAtFixedRate(new TimerTask() { //lambda doesn't work
 			public void run() {
+				if (!isTimerOn) return;
 				HomePage.this.interval--;
 				trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 				ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));

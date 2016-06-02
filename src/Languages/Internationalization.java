@@ -37,6 +37,7 @@ public class Internationalization {
 		this.map.put("labelRemain", "距下次休息还有");
 		this.map.put("checkFullScreen", "全屏休息");
 		this.map.put("checkCloseMonitor", "关闭显示器");
+		this.map.put("checkAutoRest", "自动休息");
 		this.map.put("butStop", "停止休息");
 		this.map.put("butPause", "暂停休息");
 		this.map.put("Game", "游戏");
