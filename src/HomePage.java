@@ -165,6 +165,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	public void reset() {
 		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
 				== JOptionPane.YES_OPTION) {
+			skipCounter = 0;
 			setTime(Main.timeModel.getInterval());
 			Main.timeModel = new TimeModel(Main.timeModel.getInterval(), Main.timeModel.getPeriod());
 		}

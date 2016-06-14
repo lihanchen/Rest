@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class RestingWindow extends JDialog implements HotKeyReceiver {
 
@@ -13,6 +15,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 	private int secondRemainging;
 	private Timer timer, pauseTimer;
 	private int pauseCounter = 0;
+	private boolean pendingExit = false;
 
 	public RestingWindow(int restTime) {
 		this.add(contentPane);
@@ -41,12 +44,30 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		this.setVisible(true);
 		secondRemainging = restTime;
 		LabelRemainingTime.setText(twoDigitStr(restTime / 60) + ":" + twoDigitStr(restTime % 60));
+		LabelRemainingTime.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			public void mousePressed(MouseEvent e) {
+			}
+
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			public void mouseEntered(MouseEvent e) {
+				if (pendingExit) stop(false);
+			}
+
+			public void mouseExited(MouseEvent e) {
+				if (pendingExit) stop(false);
+			}
+		});
 
 		timer = new Timer(1000, e -> tick());
 		timer.start();
 
 		ButCloseMonitor.addActionListener(e -> JNI.closeMonitor());
-		ButStop.addActionListener(e -> stop());
+		ButStop.addActionListener(e -> stop(false));
 		ButPause.addActionListener(e -> pause());
 
 		if (Boolean.parseBoolean(Main.settings.getProperty("closeMonitor")))
@@ -71,15 +92,19 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		LabelRemainingTime.setText(twoDigitStr(secondRemainging / 60) + ":" + twoDigitStr(secondRemainging % 60));
 		if (secondRemainging == 0) {
 			Main.playSound();
-			stop();
+			stop(true);
 		}
 	}
 
-	private void stop() {
+	private void stop(boolean auto) {
+		this.timer.stop();
+		if (auto) {
+			pendingExit = true;
+			return;
+		}
 		int nextInterval = Main.timeModel.stopRest();
 		HomePage homePage = HomePage.getInstance();
 		homePage.setTime(nextInterval);
-		this.timer.stop();
 		this.dispose();
 		theInstance = null;
 		if (homePage.getExtendedState() == JFrame.NORMAL)
