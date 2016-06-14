@@ -45,6 +45,7 @@ public class TimeModel {
 			lastActionTime = period;
 		else
 			lastActionTime = period * playingTime / lastActionTime;
+		if (lastActionTime > 2 * period) lastActionTime = 2 * period;
 		return lastActionTime > 0 ? lastActionTime : 1;
 	}
 
@@ -64,7 +65,8 @@ public class TimeModel {
 			lastActionTime = interval;
 		else
 			lastActionTime = interval * restingTime / lastActionTime;
-		return lastActionTime > 0 ? lastActionTime : 1;
+		if (lastActionTime < 10 * 60) lastActionTime = 600;
+		return lastActionTime;
 	}
 
 	public int keepPlaying() {

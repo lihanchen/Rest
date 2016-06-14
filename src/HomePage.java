@@ -103,7 +103,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 
 
 		//托盘
-		if (SystemTray.isSupported()) {
+		if (JNI.success && SystemTray.isSupported()) {
 			tray = SystemTray.getSystemTray();
 			popMenu = new PopupMenu();
 			MenuItem itemRestNow = new MenuItem(Main.strings.getString("RestNow"));
@@ -165,6 +165,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 	public void reset() {
 		if (JOptionPane.showConfirmDialog(this, Main.strings.getString("reset?"), Main.strings.getString("ResetTime"), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)
 				== JOptionPane.YES_OPTION) {
+			skipCounter = 0;
 			setTime(Main.timeModel.getInterval());
 			Main.timeModel = new TimeModel(Main.timeModel.getInterval(), Main.timeModel.getPeriod());
 		}
@@ -179,7 +180,8 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			public void run() {
 				if (!isTimerOn) return;
 				HomePage.this.interval--;
-				trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
+				if (trayIcon != null)
+					trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 				ButRemaining.setText(twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
 				if (HomePage.this.interval == 0) {
 					HomePage.this.timer.cancel();
@@ -212,9 +214,11 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 
 	public void windowIconified(WindowEvent e) {
 		try {
-			tray.add(trayIcon);
-			trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
-			HomePage.this.setVisible(false);
+			if (tray != null) {
+				tray.add(trayIcon);
+				trayIcon.setToolTip(Main.strings.getString("signature") + "\n" + twoDigitStr(HomePage.this.interval / 60) + ":" + twoDigitStr(HomePage.this.interval % 60));
+				HomePage.this.setVisible(false);
+			}
 		} catch (AWTException ignored) {
 		}
 	}
@@ -236,7 +240,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 		HotKeyHandler.removeOperation(Main.strings.getString("showWindow"));
 		HotKeyHandler.removeOperation(Main.strings.getString("RestNow"));
 		this.setVisible(false);
-		tray.remove(trayIcon);
+		if (tray != null) tray.remove(trayIcon);
 		if (automatic) {
 			if (skipCounter <= 2) HotKeyHandler.addOperation(Main.strings.getString("skipRest"), this);
 			HotKeyHandler.addOperation(Main.strings.getString("startRest"), this);
