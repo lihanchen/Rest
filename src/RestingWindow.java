@@ -28,11 +28,11 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		ButPause.setText(Main.strings.getString("butPause"));
 		ButStop.setText(Main.strings.getString("butStop"));
 
-		//FullScreen
-		if (Boolean.parseBoolean(Main.settings.getProperty("fullScreen"))) {
+		if (Boolean.parseBoolean(Main.settings.getProperty("fullScreen"))) {//FullScreen
 			int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
 			int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 			this.setSize(screenWidth, screenHeight);
+			if (screenWidth>screenHeight*2.5) screenWidth=screenWidth/2;
 			this.setLocation(0, 0);
 			contentPane.setBounds(new Rectangle((screenWidth - 500) / 2, (screenHeight - 250) / 2, 500, 250));
 		} else {

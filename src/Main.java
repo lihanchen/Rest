@@ -50,11 +50,6 @@ public class Main {
 	}
 
 	public static void main(String args[]) throws InterruptedException {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		JNI.init();
 		icon = new ImageIcon(Main.class.getResource("icon.png"));
 		timeModel = new TimeModel(Integer.parseInt(settings.getProperty("interval")) * 60, Integer.parseInt(settings.getProperty("period")) * 60);

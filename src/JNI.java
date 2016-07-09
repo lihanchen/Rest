@@ -1,5 +1,7 @@
 import com.melloware.jintellitype.JIntellitype;
 
+import javax.swing.*;
+
 public abstract class JNI {
     static boolean success = false;
 
@@ -14,6 +16,18 @@ public abstract class JNI {
 			success = true;
 			setHotKey();
 		}
+		if (os.contains("Linux")) {
+			try {
+				UIManager.setLookAndFeel(new com.sun.java.swing.plaf.gtk.GTKLookAndFeel());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
     }
 
     public native static boolean checkFullScreen();
