@@ -78,7 +78,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 				Main.settings.put("interval", textInterval.getText());
 				Main.settings.put("period", textPeriod.getText());
 				this.interval += 60 * (newInterval - OldInterval);
-				Main.timeModel.change(newInterval, newPeriod);
+				Main.timeModel.change(newInterval*60, newPeriod*60);
 				if (interval <= 0) rest(true);
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(this, Main.strings.getString("errorNumberFormat"), Main.strings.getString("error"), JOptionPane.ERROR_MESSAGE);
@@ -103,7 +103,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 
 
 		//托盘
-		if (JNI.success && SystemTray.isSupported()) {
+		if (SystemTray.isSupported()) {
 			tray = SystemTray.getSystemTray();
 			popMenu = new PopupMenu();
 			MenuItem itemRestNow = new MenuItem(Main.strings.getString("RestNow"));
