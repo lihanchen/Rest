@@ -40,7 +40,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 			this.setLocationRelativeTo(null);
 		}
 		LabelRemainingTime.setFont(LabelRemainingTime.getFont().deriveFont(180F));
-		if (!JNI.success) ButCloseMonitor.setVisible(false);
+		if (!JNI.monitor) ButCloseMonitor.setVisible(false);
 		this.setVisible(true);
 		secondRemainging = restTime;
 		LabelRemainingTime.setText(twoDigitStr(restTime / 60) + ":" + twoDigitStr(restTime % 60));
@@ -71,9 +71,9 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 		ButPause.addActionListener(e -> pause());
 
 		if (Boolean.parseBoolean(Main.settings.getProperty("closeMonitor")))
-			if (JNI.success) JNI.closeMonitor();
+			if (JNI.monitor) JNI.closeMonitor();
 
-		if (JNI.success) {
+		if (JNI.gameMonitor) {
 			GameMonitor.getInstance().timer.stop();
 		}
 	}
@@ -98,6 +98,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 
 	private void stop(boolean auto) {
 		this.timer.stop();
+		if (JNI.monitor) JNI.openMonitor();
 		if (auto) {
 			pendingExit = true;
 			return;
@@ -114,10 +115,7 @@ public class RestingWindow extends JDialog implements HotKeyReceiver {
 				HomePage.getInstance().tray.add(HomePage.getInstance().trayIcon);
 			} catch (Exception ignored) {
 			}
-		if (JNI.success) {
-			JNI.openMonitor();
-			GameMonitor.getInstance().timer.start();
-		}
+		if (JNI.gameMonitor) GameMonitor.getInstance().timer.start();
 	}
 
 	public void onReceive(String requestCode) {

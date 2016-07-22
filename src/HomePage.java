@@ -148,7 +148,7 @@ public class HomePage extends JFrame implements WindowListener, HotKeyReceiver {
 			});
 		}
 
-		if (!JNI.success) Tabs.remove(2);
+		if (!JNI.gameMonitor) Tabs.remove(2);
 
 		this.setTime(Main.timeModel.getInterval());
 	}

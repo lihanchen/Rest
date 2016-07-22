@@ -9,7 +9,7 @@ public class GameMonitor {
 	private static GameMonitor ourInstance;
 
 	static {
-		ourInstance = JNI.success ? new GameMonitor() : null;
+		ourInstance = JNI.gameMonitor ? new GameMonitor() : null;
 	}
 
 	public Timer timer;
