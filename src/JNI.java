@@ -3,8 +3,10 @@ import com.melloware.jintellitype.JIntellitype;
 import javax.swing.*;
 
 public abstract class JNI {
-	static boolean monitor = false;
+	static boolean screenOff = false;
 	static boolean gameMonitor = false;
+	static boolean linux = false;
+	static boolean unity = false;
 
 	public static void init() {
 		String os = System.getProperty("os.name");
@@ -21,11 +23,12 @@ public abstract class JNI {
 			} else {
 				System.loadLibrary("win32");
 			}
-			monitor = true;
+			screenOff = true;
 			gameMonitor = true;
 			setHotKey();
 		}
 		if (os.contains("Linux")) {
+			linux = true;
 			try {
 				UIManager.setLookAndFeel(new com.sun.java.swing.plaf.gtk.GTKLookAndFeel());
 			} catch (Exception e) {
@@ -36,7 +39,8 @@ public abstract class JNI {
 			} else {
 				System.loadLibrary("linux32");
 			}
-			monitor = true;
+			screenOff = true;
+
 		}
 	}
 
