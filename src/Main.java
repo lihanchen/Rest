@@ -1,8 +1,7 @@
 import Languages.Chinese;
 import Languages.Internationalization;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,8 +31,16 @@ public class Main {
 
 	public static void playSound() {
 		try {
-			AudioStream ring = new AudioStream(Main.class.getResourceAsStream("Sound.wav"));
-			AudioPlayer.player.start(ring);
+			AudioInputStream in = AudioSystem.getAudioInputStream(Main.class.getResourceAsStream("Sound.wav"));
+			AudioFormat format = in.getFormat();
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+			SourceDataLine auline = (SourceDataLine) AudioSystem.getLine(info);
+			auline.open(format);
+			auline.start();
+			byte[] buffer = new byte[512];
+			int len;
+			while ((len = in.read(buffer)) > 0)
+				auline.write(buffer, 0, len);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
